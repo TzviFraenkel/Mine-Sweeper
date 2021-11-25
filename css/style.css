@@ -1,0 +1,45 @@
+body {
+    background-color: lightyellow;
+    text-align: center;
+}
+
+.cell {
+    width: 25px;
+    height: 25px;
+    border: 1px solid rgb(92, 91, 91);
+    background-color: grey;
+    margin: auto;
+    padding: 0px;
+}
+.cell.red{
+    background-color: red;
+}
+
+table {
+    padding-top: 60px;
+    margin: auto;
+}
+
+.text {
+    display: none;
+}
+
+.shown .text {
+    display: block;
+}
+.shown {
+    padding: 0px;
+    background-color: rgb(168, 160, 160);
+}
+.flag {
+    display: none;
+}
+.marked .flag{
+    display: block;
+}
+.seconds{ 
+    border-width: 50px;
+    padding: 2px;
+    border: rgb(61, 21, 21) solid 1px;
+    /* needs some work */
+}
