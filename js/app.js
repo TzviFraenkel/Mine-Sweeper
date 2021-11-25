@@ -330,13 +330,13 @@ function bestScores() {
 }
 
 function showScores() {
-    if (localStorage.bestBeginner != Infinity) {
+    if (localStorage.bestBeginner) {
         document.querySelector('.Beginner').innerText = localStorage.bestBeginner;
     }
-    if (localStorage.bestMedium != Infinity) {
+    if (localStorage.bestMedium) {
         document.querySelector('.Medium').innerText = localStorage.bestMedium;
     }
-    if (localStorage.bestExpert != Infinity) {
+    if (localStorage.bestExpert) {
         document.querySelector('.Expert').innerText = localStorage.bestExpert;
     }
 }
