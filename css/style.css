@@ -2,6 +2,9 @@ body {
     background-color: lightyellow;
     text-align: center;
 }
+/* .matrixDiv{
+    background-color: wheat;
+} */
 
 .cell {
     width: 25px;
@@ -16,7 +19,6 @@ body {
 }
 
 table {
-    padding-top: 60px;
     margin: auto;
 }
 
@@ -42,4 +44,10 @@ table {
     padding: 2px;
     border: rgb(61, 21, 21) solid 1px;
     /* needs some work */
+}
+.hints.hintOn {
+    background-color: orange;
+}
+p{
+    margin-top: 5px;
 }
