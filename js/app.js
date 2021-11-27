@@ -72,7 +72,8 @@ function renderBoard() {
 
             strHTML += `<td class="cell ${className}" data-location="${i},${j}" 
                             onclick="cellClicked(this, ${i}, ${j})"
-                            oncontextmenu="javascript:rihgtClick(this, ${i}, ${j});return false;">
+                            oncontextmenu="javascript:rihgtClick(this, ${i}, ${j});return false;"
+                            onmousedown="WhichButton(event, ${i}, ${j})">
                             <span class="text">${strInnerText}</span>
                             <span class="flag">${FLAG}</span>
                         </td>`
@@ -142,15 +143,19 @@ function cellClicked(elCell, i, j) {
     if (currCell.minesAroundCount === 0 && !currCell.isMine) openSurroundingCells(i, j);
 
     if (currCell.isMine) {
-        gGame.livesLeft--;
-        if (gGame.livesLeft > 0) {
-            showCell1Sec(elCell, i, j);
-        } else {
-            elCell.classList.add('red');
-            GameOver(false);
-        }
-        renderLives();
+        mineClick(elCell, i, j);
     } else checkGameOver();
+}
+
+function mineClick(elCell, i, j) {
+    gGame.livesLeft--;
+    if (gGame.livesLeft > 0) {
+        showCell1Sec(elCell, i, j);
+    } else {
+        elCell.classList.add('red');
+        GameOver(false);
+    }
+    renderLives(); 
 }
 
 function rihgtClick(elCell, i, j) {
@@ -321,7 +326,7 @@ function bestScores() {
             break;
         case 12:
             if (Number(localStorage.bestExpert) > gGame.secsPassed
-            || !localStorage.bestExpert) {
+                || !localStorage.bestExpert) {
                 localStorage.bestExpert = gGame.secsPassed;
                 document.querySelector('.Expert').innerText = localStorage.bestExpert
             }
@@ -339,4 +344,46 @@ function showScores() {
     if (localStorage.bestExpert) {
         document.querySelector('.Expert').innerText = localStorage.bestExpert;
     }
+}
+
+function WhichButton(event, i, j) {   //no i,j yet    //check for right+left click 
+    var x = event.buttons;
+    if (x === 3) rightLeftClick(i, j);
+}
+
+function rightLeftClick(rowIdx, colIdx) {    //check for right+left click
+    if (!gBoard[rowIdx][colIdx].isShown) return;
+    var flagsAroundCounter = 0;
+    for (var i = rowIdx - 1; i <= rowIdx + 1; i++) {        // neighbours loop
+        if (i < 0 || i > gBoard.length - 1) continue
+        for (var j = colIdx - 1; j <= colIdx + 1; j++) {
+            if (j < 0 || j > gBoard[0].length - 1) continue
+            if (i === rowIdx && j === colIdx) continue
+            var cell = gBoard[i][j];
+            if (cell.isShown) continue;
+
+            if (cell.isMarked) flagsAroundCounter++;
+        }
+    }
+    if (gBoard[rowIdx][colIdx].minesAroundCount === flagsAroundCounter) {
+        for (var i = rowIdx - 1; i <= rowIdx + 1; i++) {        // neighbours loop
+            if (i < 0 || i > gBoard.length - 1) continue
+            for (var j = colIdx - 1; j <= colIdx + 1; j++) {
+                if (j < 0 || j > gBoard[0].length - 1) continue
+                if (i === rowIdx && j === colIdx) continue
+                var cell = gBoard[i][j];
+                if (cell.isShown) continue;
+                if (cell.isMarked) continue;
+
+                var elCell = document.querySelector(`[data-location="${i},${j}"]`);
+                //model:
+                cell.isShown = true;
+                //dom:
+                elCell.classList.add('shown');
+
+                if (cell.isMine) mineClick(elCell, i, j);       //steping on mine
+                if (cell.minesAroundCount === 0 && !cell.isMine) openSurroundingCells(i, j);
+            }
+        }
+    } return;
 }
