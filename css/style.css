@@ -20,6 +20,7 @@ body {
 
 table {
     margin: auto;
+    margin-top: 5px;
 background-color: lightsteelblue;
 }
 

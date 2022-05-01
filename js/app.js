@@ -12,7 +12,7 @@ var gGame = {
     livesLeft: 3,
     hinstLeft: 3,
     isFirstClick: true,
-    isFirstLeftClick: true
+    // isFirstLeftClick: true
 }
 var gLevel = {
     size: 4,
@@ -32,7 +32,7 @@ function restart() {
     gGame.isOn = true;
     gGame.secsPassed = 0;
     gGame.isFirstClick = true;
-    gGame.isFirstLeftClick = true;
+    // gGame.isFirstLeftClick = true;
     gGame.livesLeft = 3;
     gGame.hinstLeft = 3;
     gBoard = [];
@@ -72,7 +72,7 @@ function renderBoard() {
 
             strHTML += `<td class="cell ${className}" data-location="${i},${j}" 
                             onclick="cellClicked(this, ${i}, ${j})"
-                            oncontextmenu="javascript:rihgtClick(this, ${i}, ${j});return false;"
+                            oncontextmenu="javascript:rihgtClick(${i}, ${j});return false;"
                             onmousedown="WhichButton(event, ${i}, ${j})">
                             <span class="text">${strInnerText}</span>
                             <span class="flag">${FLAG}</span>
@@ -91,7 +91,7 @@ function difficulty(diff) {
     initGame();
 }
 
-function setMines(idxI, idxJ) {
+function setMines(idxI = null, idxJ = null) {
     var locations = [];
     for (var i = 0; i < gLevel.size; i++) {
         for (var j = 0; j < gLevel.size; j++) {
@@ -125,12 +125,20 @@ function cellClicked(elCell, i, j) {
     }
     if (gBoard[i][j].isMarked) return;
 
-    if (gGame.isFirstLeftClick) {       //rerenders board so first click can't be mine
-        gGame.isFirstLeftClick = false;
+
+    if (gGame.isFirstClick) {       //rerenders board so first click can't be mine
+        gGame.isFirstClick = false;
+        timer();
         setMines(i, j);
         setMinesNegsCount();
         renderBoard();
     }
+    // if (gGame.isFirstLeftClick) {       //rerenders board so first click can't be mine
+    //     gGame.isFirstLeftClick = false;
+    //     setMines(i, j);
+    //     setMinesNegsCount();
+    //     renderBoard();
+    // }
 
     var currCell = gBoard[i][j];
     elCell = document.querySelector(`[data-location="${i},${j}"]`);
@@ -139,7 +147,7 @@ function cellClicked(elCell, i, j) {
     //dom:
     elCell.classList.add('shown');
 
-    if (gGame.isFirstClick) timer();
+    // if (gGame.isFirstClick) timer();
     if (currCell.minesAroundCount === 0 && !currCell.isMine) openSurroundingCells(i, j);
 
     if (currCell.isMine) {
@@ -155,17 +163,25 @@ function mineClick(elCell, i, j) {
         elCell.classList.add('red');
         GameOver(false);
     }
-    renderLives(); 
+    renderLives();
 }
 
-function rihgtClick(elCell, i, j) {
+function rihgtClick(i, j) {
     if (!gGame.isOn) return;
+    if (gGame.isFirstClick) {
+        gGame.isFirstClick = false;
+        timer();
+        setMines();
+        setMinesNegsCount();
+        renderBoard();
+    }
     if (gBoard[i][j].isShown) return;
+
+    var elCell = document.querySelector(`[data-location="${i},${j}"]`);
     //model:
     gBoard[i][j].isMarked = !gBoard[i][j].isMarked;
     //dom:
     elCell.classList.toggle('marked')
-    if (gGame.isFirstClick) timer();
     checkGameOver()
     return false;
 }
@@ -190,10 +206,16 @@ function openSurroundingCells(rowIdx, colIdx) {
             if (i === rowIdx && j === colIdx) continue
             var cell = gBoard[i][j];
             if (cell.isShown) continue;
+            var elCell = document.querySelector(`[data-location="${i},${j}"]`);
+            if (cell.isMarked) {  //unflag
+                //model
+                cell.isMarked = false;
+                //dom
+                elCell.classList.remove('marked');
+            }
             //model:
             cell.isShown = true;
             //dom:
-            var elCell = document.querySelector(`[data-location="${i},${j}"]`);
             elCell.classList.add('shown');
 
             if (cell.minesAroundCount === 0) openSurroundingCells(i, j);
@@ -229,7 +251,7 @@ function GameOver(isWin) {
 }
 
 function timer() {
-    gGame.isFirstClick = false;
+    // gGame.isFirstClick = false;
     gTimerInterval = setInterval(() => {
         gGame.secsPassed++;
         var elTimer = document.querySelector('.seconds');
@@ -265,7 +287,7 @@ function showCell1Sec(elCell, i, j) {
 }
 
 function hintOn() {
-    if (gGame.isFirstLeftClick) return;
+    if (gGame.isFirstClick) return;
     var elHints = document.querySelector('.hints');
     if (gGame.isHintOn) {
         gGame.isHintOn = false;
